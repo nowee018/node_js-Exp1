@@ -1,31 +1,71 @@
-const { application } = require("express");
+const { application, response } = require("express");
 const express = require("express");
 const app = express();
 
 const port = 3000;
-
 const mysql = require('mysql');
 
 
 
 
-app.get('/', (req, res) => {
-    res.send("hello world");
-});
+// Router 설정 =============================================
+app.use(express.urlencoded({ extended: true }));
+const bodyparser = require("body-parser");
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
 
-app.listen(port, () => {
-    console.log(`서버가 가동중입니다. ${port}!`);
-});
+const postsRouter = require('./routes/post.router')
+app.use("/api/v1/posts", postsRouter)
 
+
+
+
+/// DB Connection ===================================================
 const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
-    port: 3306,
-
+    password: 'soo*2852',
+    database: 'study_db', /*databse 작성 */
 
 });
+
 con.connect(function (err) {
-    if (err) console.log('error');
+    if (err) throw err;
     console.log('Connected');
+
 });
+
+// REST API (get) ===============================================
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+app.get('/', (request, response) => {
+    const sql = "SELECT * FROM User"
+
+    con.query(sql, function (err, result, fields) {
+        if (err) throw err;
+        response.send(result)
+    });
+
+});
+
+// con.query(sql, function (err, result, fields) {
+//     //if (err) console.log('error');
+
+//     console.log(result);
+// });
+
+// /*테이블 검색 데이터를 브라우저에 표시*/
+// /*insert 문*/
+// const sql = "INSERT INTO users(name, game, score, date) VALUES('kevin','cer', 20, 0102 )"
+// app.get('/', (request, response) => {
+
+
+//     con.query(sql, function (err, result, fields) {
+//         if (err) throw ('error');
+
+//         console.log(result);
+//     })
+// });
+
+// /*insert 문 */
+
