@@ -1,7 +1,6 @@
 const { application, response } = require("express");
 const express = require("express");
 const app = express();
-
 const port = 3000;
 const mysql = require('mysql');
 
@@ -9,10 +8,11 @@ const mysql = require('mysql');
 
 
 // Router 설정 =============================================
-app.use(express.urlencoded({ extended: true }));
+
 const bodyparser = require("body-parser");
-app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
+app.use(bodyparser.json());
+app.use(express.urlencoded({ extended: true }));
 
 const postsRouter = require('./routes/post.router')
 app.use("/api/v1/posts", postsRouter)
