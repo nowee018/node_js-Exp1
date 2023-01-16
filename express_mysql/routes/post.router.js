@@ -13,19 +13,20 @@ router.get("/game", postsController.getGame) /* Game 리스트 가져오기 */
 router.get("/:id", postsController.getByUserId) /* http://localhost:3000/api/v1/posts/{id} ( User data )*/
 
 
-// --GET (RANK)
-
-// router.get("/Rtotal", postsController.getTotalRank) /* http://localhost:3000/api/v1/posts ;(User data )*/
-// router.get("/Rgame", postsController.getGameRank) /* http://localhost:3000/api/v1/posts ( Game data )*/
-
-
-
 //-- POST 
 router.post("/game", postsController.postgamename) /* http://localhost:3000/api/v1/posts/Game/*/
 router.post("/user", postsController.postuser) /* 사용자 정보 입력하기 */
+router.post("/score", postsController.postscore) /* Score 정보 입력하기 */
 
 
 // - PUT
 router.put("/:id", postsController.updatescore) /* win, lose update */
+router.put("/updateuser/:id", postsController.updateuser) /* 사용자 정보 수정 */
+
+// - Delete 
+router.delete("/deleteuser/:id", postsController.deleteuser) /* 사용자 정보 삭제 */
+
+
+//router.put("/:id", postsController.updatescore) /* 사용자 정보 삭제 */
 module.exports = router;
 

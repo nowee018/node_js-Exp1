@@ -35,8 +35,11 @@ const postsController = {
         }
     },
 
+    /*User별 ID로 해당 리스트 가져오기 */
     getByUserId: async (req, res) => {
         try {
+
+
             const { id } = req.params
             const [rows, fields] = await pool.query("select * from User where id = ?", [id])
             res.json({
@@ -49,11 +52,14 @@ const postsController = {
             })
         }
     },
+    /*Game 리스트 가져오기*/
     getGame: async (req, res) => {
         try {
             const [rows, fields] = await pool.query("select * from Game")
+            /*null 값이 들어갈 경우 제외한 리스트만 반환 */
+            uniquegame = dataprocess.UniqueGame(rows)
             res.json({
-                data: rows
+                data: uniquegame
             })
         } catch (error) {
             console.log(error)
@@ -84,7 +90,7 @@ const postsController = {
         }
     },
 
-    /* id 별 랭크 가져오기 */
+    /* name 별 랭크 가져오기 */
     getUsersWithRankByName: async (req, res) => {
         try {
 
@@ -114,13 +120,12 @@ const postsController = {
     getUsersWithTotalRank: async (req, res) => {
         try {
 
-
             const [rows, Userfields] = await pool.query("select * from User")
-
             totalrank = dataprocess.TotalRank(rows)
             res.json({
                 data: totalrank
             })
+
         } catch (error) {
             console.log(error)
         }
@@ -134,8 +139,10 @@ const postsController = {
     postgamename: async (req, res) => {
         try {
             const { game_name } = req.body
-            //console.log(req.body)
+            //console.log(game_name)
             const sql = "insert into study_db.Game (game_name) values (?)"
+
+            /*game_name이 null 값이거나 중복된 값이면 예외 처리*/
             const [rows, fields] = await pool.query(sql, [game_name])
             res.json({
                 data: rows
@@ -151,7 +158,7 @@ const postsController = {
     postuser: async (req, res) => {
         try {
             const { name, age, sex, game_id } = req.body
-            console.log(name, age, sex, game_id);
+            // console.log(name, age, sex, game_id);
             const sql = "insert into study_db.User (name, age, sex, game_id) values (?, ?, ?, ?)"
             const [rows, fields] = await pool.query(sql, [name, age, sex, game_id])
             res.json({
@@ -165,13 +172,58 @@ const postsController = {
         }
     },
 
+
+    postscore: async (req, res) => {
+        try {
+
+
+            let { game_name, user1_name, user1_age, user1_sex, user2_name, user2_age, user2_sex, user1_score, user2_score, date } = req.body
+
+            let [game_id,] = await pool.query("select id from Game where game_name = ? ", [game_name])
+
+            let user1 = await pool.query("select id, win, lose from User where name = ? and  age = ? and sex = ? and game_id = ? ", [user1_name, user1_age, user1_sex, game_id[0]["id"]])
+            let user2 = await pool.query("select id, win, lose from  User where name = ? and  age = ? and  sex = ? and game_id = ? ", [user2_name, user2_age, user2_sex, game_id[0]["id"]])
+
+            /* User1 table에 해당 정보가 없을 경우*/
+            if (dataprocess.isEmptyArr(user1[0])) {
+
+                user1 = await dataprocess.InsertandSelectUser(user1_name, user1_age, user1_sex, game_id[0]["id"]);
+
+            }
+
+            /* User2 table에 해당 정보가 없을 경우*/
+            if (dataprocess.isEmptyArr(user2[0])) {
+
+                user2 = await dataprocess.InsertandSelectUser(user2_name, user2_age, user2_sex, game_id[0]["id"]);
+
+            }
+
+            const sql = "insert into study_db.Score (game_ID, user_ID1, user_ID2, score1, score2, date) values (?, ?, ?, ?, ?, ?)"
+
+            /* win, lose data를 User table에 업데이트 하기 */
+            dataprocess.UpdateWinorLose(user1[0], user2[0], user1_score, user2_score)
+
+            const [rows, fields] = await pool.query(sql, [game_id[0]["id"], user1[0][0]["id"], user2[0][0]["id"], user1_score, user2_score, date])
+
+            res.json({
+                data: rows
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            res.json({
+                status: "error"
+            })
+        }
+    },
+
     // UPDATE --------------------------------------------------------------------------------------------------------------------------
 
     updatescore: async (req, res) => {
         try {
-            const { win, lose } = req.body
-            console.log(win, lose)
-            const { id } = req.params
+
+            const { id, win, lose } = req.body
             const sql = "update study_db.User SET win = ?, lose = ? where id = ?"
             const { rows, fields } = await pool.query(sql, [win, lose, id])
             res.json({
@@ -180,7 +232,41 @@ const postsController = {
         } catch (error) {
             console.log(error)
         }
-    }
+    },
+
+    updateuser: async (req, res) => {
+        try {
+            const { name, age, sex } = req.body
+            const { id } = req.params
+            const sql = "update study_db.User SET name =?, age =? , sex = ?  where id = ? "
+            const { rows, fields } = await pool.query(sql, [name, age, sex, id])
+            res.json({
+                data: rows
+            })
+        } catch (error) {
+            R
+            console.log(error)
+        }
+    },
+
+
+    // DELETE  -----------------------------------------------------------------------------------------------------
+    deleteuser: async (req, res) => {
+        try {
+            const { id } = req.params
+            const sql = "delete from User where id = ? "
+            const { rows, fields } = await pool.query(sql, [id])
+            res.json({
+                data: rows
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    },
+
+
+
+
 }
 
 
