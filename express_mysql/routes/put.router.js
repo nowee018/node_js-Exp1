@@ -5,9 +5,6 @@ const putsController = require("../controller/put.controller")
 
 
 // - PUT
-router.put("/:id", putsController.updatescore) /* win, lose update */
-router.put("/updateuser/:id", putsController.updateuser) /* 사용자 정보 수정 */
-
-
+router.put("/updategame", putsController.updategame) /* 게임정보 수정 */
 
 module.exports = router;

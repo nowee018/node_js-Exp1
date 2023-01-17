@@ -71,11 +71,12 @@ const getController = {
 
             const { game_name } = req.body
 
+            let [game_id, field] = await pool.query("select * from Game where game_name = ?", [game_name])
 
-            const [Userrows, Userfields] = await pool.query("select * from User where game_id in (select id from Game where game_name = ?) order by win DESC", [game_name])
+            const [Userrows, Userfields] = await pool.query("select * from User where game_id = ? order by win DESC", [game_id[0]["id"]])
 
             /*game 별 Rank 생성 */
-            rankbygamename = dataprocess.RankbyGameName(Userrows)
+            rankbygamename = dataprocess.RankbyGameName(Userrows, game_name)
             res.json({
                 data: rankbygamename
             })

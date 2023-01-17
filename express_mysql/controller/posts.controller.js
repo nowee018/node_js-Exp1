@@ -46,9 +46,24 @@ const postsController = {
             const { name, age, sex, game_name } = req.body
 
             let [game_id,] = await pool.query("select id from Game where game_name = ? ", [game_name])
-            // console.log(name, age, sex, game_id);
-            const sql = "insert into study_db.User (name, age, sex, game_id) values (?, ?, ?, ?)"
-            const [rows, fields] = await pool.query(sql, [name, age, sex, game_id[0]["id"]])
+
+            let user1 = await pool.query("select * from User where name = ? and  game_id = ? ", [name, game_id[0]["id"]])
+
+
+            let rows = "";
+
+            /* User1 table에 해당 정보가 없을 경우 등록*/
+            if (dataprocess.isEmptyArr(user1[0])) {
+
+                // console.log(name, age, sex, game_id);
+                const sql = "insert into study_db.User (name, age, sex, game_id) values (?, ?, ?, ?)"
+                rows = await pool.query(sql, [name, age, sex, game_id[0]["id"]])
+
+            } else {
+                rows += "해당 정보는 이미 등록되어 있습니다."
+            }
+
+
             res.json({
                 data: rows
             })

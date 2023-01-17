@@ -39,12 +39,21 @@ const dataprocess = {
     },
 
 
-    RankbyGameName(Userrows) {
-        for (var i = 0; i < Userrows.length; i++) {
-            Userrows[i].ranks = i + 1;
+    RankbyGameName(rows, game_name) {
+
+
+        let Users = new Array();
+        var Rank = 0;
+        for (var i = 0; i < rows.length; i++) {
+            /*User들 중 NULL 값이 있을 경우 제거 */
+            if (rows[i].name == null || rows[i].sex == null || rows[i].age == null || rows[i].win == null || rows[i].lose == null) {
+                continue;
+            }
+            Users.push({ id: rows[i].id, name: rows[i].name, sex: rows[i].sex, age: rows[i].age, win: rows[i].win, lose: rows[i].lose, rank: Rank += 1, game_name: game_name })
         }
-        return Userrows;
     },
+
+
 
     TotalRank(rows) {
         let Users = new Array();
