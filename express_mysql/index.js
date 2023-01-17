@@ -15,7 +15,18 @@ app.use(bodyparser.json());
 app.use(express.urlencoded({ extended: true }));
 
 const postsRouter = require('./routes/post.router')
-app.use("/api/v1/posts", postsRouter)
+app.use("/api/v1/post", postsRouter)
+
+const getsRouter = require('./routes/get.router')
+app.use("/api/v1/get", getsRouter)
+
+
+const putsRouter = require('./routes/put.router')
+app.use("/api/v1/put", putsRouter)
+
+
+const deletesRouter = require('./routes/delete.router')
+app.use("/api/v1/delete", deletesRouter)
 
 
 

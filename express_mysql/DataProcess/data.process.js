@@ -6,10 +6,10 @@ const dataprocess = {
         let Users = new Array();
         for (var i = 0; i < rows.length; i++) {
             /*User들 중 NULL 값이 있을 경우 제거 */
-            if (rows[i].name == null || rows[i].sex == null || rows[i].age == null) {
+            if (rows[i].name == null || rows[i].age == null || rows[i].sex == null) {
                 continue;
             }
-            Users.push([rows[i].id, rows[i].name, rows[i].sex, rows[i].age])
+            Users.push([rows[i].id, rows[i].name, rows[i].age, rows[i].sex])
         }
         /* User들 중복 제거 */
         let UniqueUsers = [];
@@ -21,6 +21,7 @@ const dataprocess = {
             }
             itemsFound[stringUsers] = true;
         });
+
 
         return UniqueUsers;
     },
@@ -124,13 +125,16 @@ const dataprocess = {
     },
 
     /*User 테이블에 해당 정보가 없을 경우 User 정보 넣기 */
+
+
     InsertandSelectUser: async (user_name, game_id) => {
         //console.log("들어가기 성공", user_name, game_id);
 
         const sleep = ms => new Promise(res => setTimeout(res, ms));
+        let [User,] = await pool.query("select * from User where name = ? ", [user_name])
 
-        let sql = "insert into study_db.User (name, game_id) values (?, ?)"
-        const [user_update,] = await pool.query(sql, [user_name, game_id])
+        let sql = "insert into study_db.User (name, sex, age, game_id) values (?, ?, ?, ?)"
+        const [user_update,] = await pool.query(sql, [user_name, User[0]["sex"], User[0]["age"], game_id])
         await sleep(500);
         const user_update_select = await pool.query("select id, win, lose from User where name = ? and game_id = ? ", [user_name, game_id])
 
