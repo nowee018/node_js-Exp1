@@ -92,31 +92,42 @@ const dataprocess = {
     },
 
     UpdateWinorLose: async (user1, user2, user1_score, user2_score) => {
-        const sql = "update study_db.User SET  win = ?, lose = ? where id = ?"
+        const sql = "update study_db.User SET  win = ?, lose = ?, sum = ? where id = ?"
 
         /* NULL 일경우 0,0 으로 초기화 */
-        if ((!user1[0]["win"]) || (!user1[0]["lose"])) {
-            const [user1_reset,] = await pool.query(sql, [0, 0, user1[0]["id"]])
+        if ((user1[0]["win"] == null) || (user1[0]["lose"] == null)) {
+            const [user1_reset,] = await pool.query(sql, [0, 0, 0, user1[0]["id"]])
         }
-        if ((!user2[0]["win"]) || (!user2[0]["lose"])) {
-            const [user2_reset,] = await pool.query(sql, [0, 0, user2[0]["id"]])
+        if ((user2[0]["win"] == null) || (!user2[0]["lose"] == null)) {
+            const [user2_reset,] = await pool.query(sql, [0, 0, 0, user2[0]["id"]])
         }
 
-        const sql_win = "update study_db.User SET  win = ? where id = ?"
-        const sql_lose = "update study_db.User SET  lose= ? where id = ?"
+        const sql_win = "update study_db.User SET  win = ?, sum = ? where id = ?"
+        const sql_lose = "update study_db.User SET  lose= ?, sum = ? where id = ?"
+        const sql_same = "update study_db.User SET  sum = ? where id = ?"
 
         if (user1_score > user2_score) {
             user1[0]["win"] += 1
             user2[0]["lose"] += 1
-            const { user1_win, } = await pool.query(sql_win, [user1[0]["win"], user1[0]["id"]])
-            const { user2_lose, } = await pool.query(sql_lose, [user2[0]["lose"], user2[0]["id"]])
+            user1[0]["sum"] += 1
+            user2[0]["sum"] += 1
+            const { user1_win, } = await pool.query(sql_win, [user1[0]["win"], user1[0]["sum"], user1[0]["id"]])
+            const { user2_lose, } = await pool.query(sql_lose, [user2[0]["lose"], user2[0]["sum"], user2[0]["id"]])
 
         } else if (user1_score < user2_score) {
             user1[0]["lose"] += 1
             user2[0]["win"] += 1
-            const { user1_lose, } = await pool.query(sql_lose, [user1[0]["lose"], user1[0]["id"]])
-            const { user2_win, } = await pool.query(sql_win, [user2[0]["win"], user2[0]["id"]])
+            user1[0]["sum"] += 1
+            user2[0]["sum"] += 1
+            const { user1_lose, } = await pool.query(sql_lose, [user1[0]["lose"], user1[0]["sum"], user1[0]["id"]])
+            const { user2_win, } = await pool.query(sql_win, [user2[0]["win"], user2[0]["sum"], user2[0]["id"]])
 
+        } else {
+            // 동점 일 경우 
+            user1[0]["sum"] += 1
+            user2[0]["sum"] += 1
+            const { user1_same, } = await pool.query(sql_same, [user1[0]["sum"], user1[0]["id"]])
+            const { user2_same, } = await pool.query(sql_same, [user2[0]["sum"], user2[0]["id"]])
         }
 
     },
@@ -145,7 +156,7 @@ const dataprocess = {
         let sql = "insert into study_db.User (name, sex, age, game_id) values (?, ?, ?, ?)"
         const [user_update,] = await pool.query(sql, [user_name, User[0]["sex"], User[0]["age"], game_id])
         await sleep(500);
-        const user_update_select = await pool.query("select id, win, lose from User where name = ? and game_id = ? ", [user_name, game_id])
+        const user_update_select = await pool.query("select id, win, lose, sum from User where name = ? and game_id = ? ", [user_name, game_id])
 
         return user_update_select;
 

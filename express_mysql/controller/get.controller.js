@@ -93,19 +93,34 @@ const getController = {
             const { name } = req.body
             //console.log(game_name)
 
-            let [Userrows, Userfields] = await pool.query("select * from User where name = ? order by win DESC", [name])
-
+            let [Userrows, Userfields] = await pool.query("select * from User where name = ? order by win DESC, sum DESC", [name])
+            let Users = [];
             /* Users들 이름별 Rank 순위 */
+            var Rank = 0;
             for (var i = 0; i < Userrows.length; i++) {
 
-                let game_name = await pool.query("select game_name from Game where id = ?", [Userrows[i].game_id])
-                //console.log(game_name)
-                Userrows[i].rank = i + 1;
-                Userrows[i].game_name = game_name[0][game_name];
-                //console.log(Userrows[i].game_name = game_name[0][0]["game_name"])
+                let [game,] = await pool.query("select game_name from Game where id = ?", [Userrows[i].game_id])
+
+                // 예외처리 1) win, lose 가 null 값일 경우 랭크에 포함 x 
+                if (Userrows[i].win == null || Userrows[i].lose == null) {
+
+                    continue;
+                }
+                // 예외처리 2) 동점자 처리 (win의 합계와 sum의 합계가 같을 경우)
+                if (i > 0 && (Userrows[i - 1].win == Userrows[i].win) && (Userrows[i - 1].sum == Userrows[i].sum)) {
+                    Userrows[i].rank = Rank;
+                    Userrows[i].game_name = game[0]["game_name"];
+                    Users.push(Userrows[i])
+                    continue;
+
+                }
+                Userrows[i].rank = Rank += 1;
+                Userrows[i].game_name = game[0]["game_name"];
+                Users.push(Userrows[i])
             }
+
             res.json({
-                data: Userrows
+                data: Users
             })
         } catch (error) {
             console.log(error)

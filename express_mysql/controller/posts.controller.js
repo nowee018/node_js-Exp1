@@ -27,7 +27,7 @@ const postsController = {
 
             } else {
                 res.json({
-                    status: "해당 정보 존재"
+                    status: `해당 게임 테이블에 ${game_name}은 이미 등록되어 있습니다.`
                 })
             }
 
@@ -60,7 +60,7 @@ const postsController = {
                 rows = await pool.query(sql, [name, age, sex, game_id[0]["id"]])
 
             } else {
-                rows += "해당 정보는 이미 등록되어 있습니다."
+                rows += `사용자 테이블에 ${name}는 이미 등록되어 있습니다.`
             }
 
 
@@ -103,7 +103,7 @@ const postsController = {
 
             const sql = "insert into study_db.Score (game_ID, user_ID1, user_ID2, score1, score2, date) values (?, ?, ?, ?, ?, ?)"
 
-            /* win, lose data를 User table에 업데이트 하기 */
+            /* win, lose, sumdata를 User table에 업데이트 하기 */
             dataprocess.UpdateWinorLose(user1[0], user2[0], user1_score, user2_score)
 
             const [rows, fields] = await pool.query(sql, [game_id[0]["id"], user1[0][0]["id"], user2[0][0]["id"], user1_score, user2_score, date])
