@@ -177,24 +177,24 @@ const postsController = {
         try {
 
 
-            let { game_name, user1_name, user1_age, user1_sex, user2_name, user2_age, user2_sex, user1_score, user2_score, date } = req.body
+            let { game_name, user1_name, user2_name, user1_score, user2_score, date } = req.body
 
             let [game_id,] = await pool.query("select id from Game where game_name = ? ", [game_name])
 
-            let user1 = await pool.query("select id, win, lose from User where name = ? and  age = ? and sex = ? and game_id = ? ", [user1_name, user1_age, user1_sex, game_id[0]["id"]])
-            let user2 = await pool.query("select id, win, lose from  User where name = ? and  age = ? and  sex = ? and game_id = ? ", [user2_name, user2_age, user2_sex, game_id[0]["id"]])
+            let user1 = await pool.query("select id, win, lose from User where name = ? and  game_id = ? ", [user1_name, game_id[0]["id"]])
+            let user2 = await pool.query("select id, win, lose from  User where name = ? and  game_id = ? ", [user2_name, game_id[0]["id"]])
 
             /* User1 table에 해당 정보가 없을 경우*/
             if (dataprocess.isEmptyArr(user1[0])) {
 
-                user1 = await dataprocess.InsertandSelectUser(user1_name, user1_age, user1_sex, game_id[0]["id"]);
+                user1 = await dataprocess.InsertandSelectUser(user1_name, game_id[0]["id"]);
 
             }
 
             /* User2 table에 해당 정보가 없을 경우*/
             if (dataprocess.isEmptyArr(user2[0])) {
 
-                user2 = await dataprocess.InsertandSelectUser(user2_name, user2_age, user2_sex, game_id[0]["id"]);
+                user2 = await dataprocess.InsertandSelectUser(user2_name, game_id[0]["id"]);
 
             }
 

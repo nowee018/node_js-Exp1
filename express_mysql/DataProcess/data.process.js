@@ -124,15 +124,15 @@ const dataprocess = {
     },
 
     /*User 테이블에 해당 정보가 없을 경우 User 정보 넣기 */
-    InsertandSelectUser: async (user_name, user_age, user_sex, game_id) => {
-        console.log("들어가기 성공", user_name, user_age, user_sex, game_id);
+    InsertandSelectUser: async (user_name, game_id) => {
+        //console.log("들어가기 성공", user_name, game_id);
 
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-        let sql = "insert into study_db.User (name, age, sex, game_id) values (?, ?, ?, ?)"
-        const [user_update,] = await pool.query(sql, [user_name, user_age, user_sex, game_id])
+        let sql = "insert into study_db.User (name, game_id) values (?, ?)"
+        const [user_update,] = await pool.query(sql, [user_name, game_id])
         await sleep(500);
-        const user_update_select = await pool.query("select id, win, lose from User where name = ? and  age = ? and sex = ? and game_id = ? ", [user_name, user_age, user_sex, game_id])
+        const user_update_select = await pool.query("select id, win, lose from User where name = ? and game_id = ? ", [user_name, game_id])
 
         return user_update_select;
 
