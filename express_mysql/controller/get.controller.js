@@ -2,6 +2,7 @@ const pool = require('../database/index')
 const dataprocess = require("../DataProcess/data.process")
 
 const getController = {
+    
     /* Score 별 리스트 가져오기 */
     getScore: async (req, res) => {
         try {
@@ -10,10 +11,7 @@ const getController = {
                 data: rows
             })
         } catch (error) {
-            console.log(error)
-            res.json({
-                state: "error"
-            })
+            next(error)
         }
     },
 
@@ -28,7 +26,7 @@ const getController = {
                 data: uniqueusers
             })
         } catch (error) {
-            console.log(error)
+           next(error)
         }
     },
 
@@ -43,10 +41,8 @@ const getController = {
                 data: rows
             })
         } catch (error) {
-            console.log(error)
-            res.json({
-                state: "error"
-            })
+            
+            next(error)
         }
     },
     /*Game 리스트 가져오기*/
@@ -66,14 +62,23 @@ const getController = {
         }
     },
 
-    getUsersWithRankByGameName: async (req, res) => {
+    getUsersWithRankByGameName: async (req, res, next) => {
         try {
 
             const { game_name } = req.body
-
+            
+            if (game_name instanceof String){
+                throw Error("It is not string")
+            }
+            
             let [game_id, field] = await pool.query("select * from Game where game_name = ?", [game_name])
 
-            const [Userrows, Userfields] = await pool.query("select * from User where game_id = ? order by win DESC", [game_id[0]["id"]])
+            if(!game_id[0]){
+                throw Error(`Game Table doesn't have '${game_name}'`)
+            }
+
+            const [Userrows, Userfields] = await pool.query("select * from User where game_id = ? order by win DESC, sum DESC", [game_id[0]["id"]])
+
 
             /*game 별 Rank 생성 */
             rankbygamename = dataprocess.RankbyGameName(Userrows, game_name)
@@ -82,8 +87,9 @@ const getController = {
             })
 
         } catch (error) {
-            console.log(error)
+           next(error)
         }
+        
     },
 
     /* name 별 랭크 가져오기 */
@@ -101,9 +107,12 @@ const getController = {
 
                 let [game,] = await pool.query("select game_name from Game where id = ?", [Userrows[i].game_id])
 
+                if (!game[i]){
+                    throw new Error(`Game Table doesn't have '${game_name}'`)
+                }
+
                 // 예외처리 1) win, lose 가 null 값일 경우 랭크에 포함 x 
                 if (Userrows[i].win == null || Userrows[i].lose == null) {
-
                     continue;
                 }
                 // 예외처리 2) 동점자 처리 (win의 합계와 sum의 합계가 같을 경우)
@@ -123,7 +132,7 @@ const getController = {
                 data: Users
             })
         } catch (error) {
-            console.log(error)
+            next(error)
         }
     },
 
@@ -142,8 +151,31 @@ const getController = {
         }
     },
 
+      /* User들 정보로 Game 리스트 가져오기 */
+    getUserbyGame: async (req, res) => {
+        try {
+            const {game_name} = req.body 
+            
+            /*Game 별 ID 가져오기 */ 
+            const [rows,] = await pool.query("select id from Game where game_name = ?", [game_name])
+            
+            /*Game_ID를 이용해서 Score table에 있는 모든 정보 가져오기 */
+            const[UserbyScore,] = await pool.query("select * from Score where game_ID = ?", [rows[0]["id"]])
+            
+
+             /*game 이름별 User 대결 생성 */
+            
+            let FinalUserbyScore = await dataprocess.UserbyGameName(UserbyScore)
+            
+            res.json({
+                data: FinalUserbyScore
+            })
 
 
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
 }
 
