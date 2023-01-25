@@ -34,12 +34,12 @@ app.use("/api/v1/get", getsRouter)
 //   }
 
 
-const putsRouter = require('./routes/put.router')
-app.use("/api/v1/put", putsRouter)
+// const putsRouter = require('./routes/put.router')
+// app.use("/api/v1/put", putsRouter)
 
 
-const deletesRouter = require('./routes/delete.router')
-app.use("/api/v1/delete", deletesRouter)
+// const deletesRouter = require('./routes/delete.router')
+// app.use("/api/v1/delete", deletesRouter)
 
 
 
@@ -62,10 +62,8 @@ app.use("/api/v1/delete", deletesRouter)
 // REST API (get) ===============================================
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
-app.get('/', (request, response) => {
-  response.json({
-    msg:"hello"
-  })
+app.get('/', (req,res) => {
+    res.send('Hello World!')
 
 });
 
