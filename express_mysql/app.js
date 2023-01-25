@@ -45,30 +45,27 @@ app.use("/api/v1/delete", deletesRouter)
 
 
 /// DB Connection ===================================================
-const con = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'soo*2852',
-    database: 'study_db', /*databse 작성 */
+// const con = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'soo*2852',
+//     database: 'study_db', /*databse 작성 */
 
-});
+// });
 
-con.connect(function (err) {
-    if (err) throw err;
-    console.log('Connected');
+// con.connect(function (err) {
+//     if (err) throw err;
+//     console.log('Connected');
 
-});
+// });
 
 // REST API (get) ===============================================
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
 app.get('/', (request, response) => {
-    const sql = "SELECT * FROM User"
-
-    con.query(sql, function (err, result, fields) {
-        if (err) throw err;
-        response.send(result)
-    });
+  response.json({
+    msg:"hello"
+  })
 
 });
 
