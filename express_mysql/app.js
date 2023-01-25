@@ -20,18 +20,18 @@ app.use("/api/v1/post", postsRouter)
 const getsRouter = require('./routes/get.router')
 app.use("/api/v1/get", getsRouter)
 
-app.use(logHandler)
-app.use(errorHandler)
-function logHandler(err, req, res, next) {
-    console.error('[' + new Date() + ']\n' + err.stack);
-    next(err);
-  }
+// app.use(logHandler)
+// app.use(errorHandler)
+// function logHandler(err, req, res, next) {
+//     console.error('[' + new Date() + ']\n' + err.stack);
+//     next(err);
+//   }
   
-  // error handler middleware
-  function errorHandler(err, req, res, next) {
-    res.status(err.status || 500);
-    res.send(err.message || 'Error!!');
-  }
+//   // error handler middleware
+//   function errorHandler(err, req, res, next) {
+//     res.status(err.status || 500);
+//     res.send(err.message || 'Error!!');
+//   }
 
 
 const putsRouter = require('./routes/put.router')
