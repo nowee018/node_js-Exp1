@@ -1,3 +1,3 @@
-# Score_Board Project 진행 
+# Score_Board Project 
 
 <img src="./Score_Board_ERD.png">
