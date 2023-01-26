@@ -1,9 +1,9 @@
 const mysql = require('mysql2')
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'soo*2852',
-    database: 'study_db'
+    host: '182.225.149.130',
+    user: 'admin',
+    password: 'soo*7618',
+    database: 'scoreboard'
 });
 
 
