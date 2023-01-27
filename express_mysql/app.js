@@ -14,11 +14,20 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(express.urlencoded({ extended: true }));
 
-const postsRouter = require('./routes/post.router')
-app.use("/api/v1/post", postsRouter)
+
 
 const getsRouter = require('./routes/get.router')
 app.use("/api/v1/get", getsRouter)
+
+const putsRouter = require('./routes/put.router')
+app.use("/api/v1/put", putsRouter)
+
+
+const deletesRouter = require('./routes/delete.router')
+app.use("/api/v1/delete", deletesRouter)
+
+const postsRouter = require('./routes/post.router')
+app.use("/api/v1/post", postsRouter)
 
 app.use(logHandler)
 app.use(errorHandler)
@@ -33,13 +42,6 @@ function logHandler(err, req, res, next) {
     res.send(err.message || 'Error!!');
   }
 
-
-const putsRouter = require('./routes/put.router')
-app.use("/api/v1/put", putsRouter)
-
-
-const deletesRouter = require('./routes/delete.router')
-app.use("/api/v1/delete", deletesRouter)
 
 
 
