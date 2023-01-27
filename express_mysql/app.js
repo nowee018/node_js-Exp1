@@ -51,7 +51,7 @@ function logHandler(err, req, res, next) {
 //     host: 'localhost',
 //     user: 'root',
 //     password: 'soo*2852',
-//     database: 'study_db', /*databse 작성 */
+//     database: 'scoreboard', /*databse 작성 */
 
 // });
 

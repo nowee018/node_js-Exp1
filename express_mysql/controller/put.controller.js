@@ -19,7 +19,7 @@ const putsController = {
             if (dataprocess.isEmptyArr(game_id_after)) {
 
                 // console.log(name, age, sex, game_id);
-                const sql = "update study_db.Game SET game_name = ?  where id = ? "
+                const sql = "update scoreboard.Game SET game_name = ?  where id = ? "
                 rows = await pool.query(sql, [game_name_after, game_id_before[0]["id"]])
 
             } else {
@@ -73,10 +73,10 @@ const putsController = {
             }
 
             // console.log(name, age, sex, game_id);
-            const sql_Score = "update study_db.Score SET score1=?, score2=? where id = ? "
+            const sql_Score = "update scoreboard.Score SET score1=?, score2=? where id = ? "
             let rows = await pool.query(sql_Score, [user1_score, user2_score, Score_Table_Id])
 
-            const sql_User= "update study_db.User SET win=?, lose=? where id = ? and game_id =?"
+            const sql_User= "update scoreboard.User SET win=?, lose=? where id = ? and game_id =?"
             rows = await pool.query(sql_User, [user1[0].win, user1[0].lose, ScoreBefore[0].user_ID1, ScoreBefore[0].game_ID])
 
             rows = await pool.query(sql_User, [user2[0].win, user2[0].lose,  ScoreBefore[0].user_ID2, ScoreBefore[0].game_ID])

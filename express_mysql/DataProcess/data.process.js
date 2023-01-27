@@ -117,7 +117,7 @@ const dataprocess = {
     },
 
     UpdateWinorLose: async (user1, user2, user1_score, user2_score) => {
-        const sql = "update study_db.User SET  win = ?, lose = ?, sum = ? where id = ?"
+        const sql = "update scoreboard.User SET  win = ?, lose = ?, sum = ? where id = ?"
 
         /* NULL 일경우 0,0 으로 초기화 */
         if ((user1[0]["win"] == null) || (user1[0]["lose"] == null)) {
@@ -127,9 +127,9 @@ const dataprocess = {
             const [user2_reset,] = await pool.query(sql, [0, 0, 0, user2[0]["id"]])
         }
 
-        const sql_win = "update study_db.User SET  win = ?, sum = ? where id = ?"
-        const sql_lose = "update study_db.User SET  lose= ?, sum = ? where id = ?"
-        const sql_same = "update study_db.User SET  sum = ? where id = ?"
+        const sql_win = "update scoreboard.User SET  win = ?, sum = ? where id = ?"
+        const sql_lose = "update scoreboard.User SET  lose= ?, sum = ? where id = ?"
+        const sql_same = "update scoreboard.User SET  sum = ? where id = ?"
 
         if (user1_score > user2_score) {
             user1[0]["win"] += 1
@@ -178,7 +178,7 @@ const dataprocess = {
         const sleep = ms => new Promise(res => setTimeout(res, ms));
         let [User,] = await pool.query("select * from User where name = ? ", [user_name])
 
-        let sql = "insert into study_db.User (name, sex, age, game_id) values (?, ?, ?, ?)"
+        let sql = "insert into scoreboard.User (name, sex, age, game_id) values (?, ?, ?, ?)"
         const [user_update,] = await pool.query(sql, [user_name, User[0]["sex"], User[0]["age"], game_id])
         await sleep(500);
         const user_update_select = await pool.query("select id, win, lose, sum from User where name = ? and game_id = ? ", [user_name, game_id])

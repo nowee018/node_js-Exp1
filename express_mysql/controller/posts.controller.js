@@ -15,7 +15,7 @@ const postsController = {
 
             let [game,] = await pool.query("select id from Game where game_name = ?", [game_name])
 
-            const sql = "insert into study_db.Game (game_name) values (?)"
+            const sql = "insert into scoreboard.Game (game_name) values (?)"
             //console.log(game[0])
             /* game table에 해당 정보가 없을 경우*/
             if (!(game[0])) {
@@ -56,7 +56,7 @@ const postsController = {
             if (dataprocess.isEmptyArr(user1[0])) {
 
                 // console.log(name, age, sex, game_id);
-                const sql = "insert into study_db.User (name, age, sex, game_id) values (?, ?, ?, ?)"
+                const sql = "insert into scoreboard.User (name, age, sex, game_id) values (?, ?, ?, ?)"
                 rows = await pool.query(sql, [name, age, sex, game_id[0]["id"]])
 
             } else {
@@ -83,6 +83,7 @@ const postsController = {
             let { game_name, user1_name, user2_name, user1_score, user2_score, date } = req.body
 
             let [game_id,] = await pool.query("select id from Game where game_name = ? ", [game_name])
+            console.log(game_id)
 
             let user1 = await pool.query("select * from User where name = ? and  game_id = ? ", [user1_name, game_id[0]["id"]])
             let user2 = await pool.query("select * from User where name = ? and  game_id = ? ", [user2_name, game_id[0]["id"]])
@@ -101,7 +102,7 @@ const postsController = {
 
             }
 
-            const sql = "insert into study_db.Score (game_ID, user_ID1, user_ID2, score1, score2, date) values (?, ?, ?, ?, ?, ?)"
+            const sql = "insert into scoreboard.Score (game_ID, user_ID1, user_ID2, score1, score2, date) values (?, ?, ?, ?, ?, ?)"
 
             /* win, lose, sumdata를 User table에 업데이트 하기 */
             dataprocess.UpdateWinorLose(user1[0], user2[0], user1_score, user2_score)
