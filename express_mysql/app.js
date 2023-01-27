@@ -1,7 +1,7 @@
 const { application, response } = require("express");
 const express = require("express");
 const app = express();
-const port = 8080;
+const port = 3306;
 const mysql = require('mysql');
 
 
@@ -20,26 +20,26 @@ app.use("/api/v1/post", postsRouter)
 const getsRouter = require('./routes/get.router')
 app.use("/api/v1/get", getsRouter)
 
-// app.use(logHandler)
-// app.use(errorHandler)
-// function logHandler(err, req, res, next) {
-//     console.error('[' + new Date() + ']\n' + err.stack);
-//     next(err);
-//   }
+app.use(logHandler)
+app.use(errorHandler)
+function logHandler(err, req, res, next) {
+    console.error('[' + new Date() + ']\n' + err.stack);
+    next(err);
+  }
   
-//   // error handler middleware
-//   function errorHandler(err, req, res, next) {
-//     res.status(err.status || 500);
-//     res.send(err.message || 'Error!!');
-//   }
+  // error handler middleware
+  function errorHandler(err, req, res, next) {
+    res.status(err.status || 500);
+    res.send(err.message || 'Error!!');
+  }
 
 
-// const putsRouter = require('./routes/put.router')
-// app.use("/api/v1/put", putsRouter)
+const putsRouter = require('./routes/put.router')
+app.use("/api/v1/put", putsRouter)
 
 
-// const deletesRouter = require('./routes/delete.router')
-// app.use("/api/v1/delete", deletesRouter)
+const deletesRouter = require('./routes/delete.router')
+app.use("/api/v1/delete", deletesRouter)
 
 
 
